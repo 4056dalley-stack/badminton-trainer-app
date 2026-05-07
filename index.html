@@ -206,7 +206,7 @@
                                     </div>
                                 `).join('')}
                             </div>
-                            <div class="grid">
+                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px;">
                                 <div class="team-display court">
                                     <div class="team-label">On Court</div>
                                     <div class="team-name">${court1.name}</div>
@@ -227,15 +227,20 @@
                                         ${court2.players.slice(2).map(p => `<p style="color: #64748b;">• ${p}</p>`).join('')}
                                     </div>
                                 </div>
-                                ${gameState.numTeams > 2 ? `
-                                <div class="team-display observing">
-                                    <div class="team-label">Observing</div>
-                                    <div class="team-name">${observing.name}</div>
-                                    <div class="players">
-                                        ${observing.players.map(p => `<p>• ${p}</p>`).join('')}
-                                    </div>
-                                </div>
-                                ` : ''}
+                                ${gameState.teams.map((team, idx) => {
+                                    if (idx !== gameState.courtTeams[0] && idx !== gameState.courtTeams[1]) {
+                                        return `
+                                            <div class="team-display observing">
+                                                <div class="team-label">Observing</div>
+                                                <div class="team-name">${team.name}</div>
+                                                <div class="players">
+                                                    ${team.players.map(p => `<p>• ${p}</p>`).join('')}
+                                                </div>
+                                            </div>
+                                        `;
+                                    }
+                                    return '';
+                                }).join('')}
                             </div>
                             <div class="rally-dots">
                                 ${[0, 1, 2].map(i => `<div class="dot ${i < gameState.rallies ? 'active' : ''}"></div>`).join('')}
