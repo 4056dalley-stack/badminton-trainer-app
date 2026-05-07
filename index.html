@@ -237,10 +237,6 @@
                             <div class="rules-grid">
                                 <h3>Available Shots</h3>
                                 <p style="color: #cbd5e1; margin-bottom: 20px;">Toggle shots on/off to customize gameplay</p>
-                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px;">
-                                    <button class="btn-primary" onclick="setSimpleMode()" style="background: #3b82f6;">Simple Mode</button>
-                                    <button class="btn-primary" onclick="setAdvancedMode()" style="background: #10b981;">Advanced Mode</button>
-                                </div>
                                 <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px;">
                                     ${SHOTS.map((shot, idx) => `
                                         <div style="background: #1e293b; padding: 15px; border-radius: 8px; display: flex; align-items: center; gap: 10px;">
@@ -249,9 +245,11 @@
                                         </div>
                                     `).join('')}
                                 </div>
-                                <div style="margin-top: 20px;">
-                                    <button class="btn-secondary" onclick="enableAllShots()" style="margin-bottom: 10px;">Enable All</button>
+                                <div style="margin-top: 20px; display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;">
+                                    <button class="btn-secondary" onclick="enableAllShots()">Enable All</button>
                                     <button class="btn-danger" onclick="disableAllShots()">Disable All</button>
+                                    <button class="btn-primary" onclick="setSimpleMode()" style="background: #3b82f6;">Simple Mode</button>
+                                    <button class="btn-primary" onclick="setAdvancedMode()" style="background: #10b981;">Advanced Mode</button>
                                 </div>
                             </div>
                         </div>
