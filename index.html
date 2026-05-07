@@ -184,7 +184,7 @@
                                 `).join('')}
                             </div>
                             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px;">
-                                <button class="btn-warning" onclick="randomizeTeams()">Shuffle Teams</button>
+                                <button class="btn-warning" onclick="randomizeCourtTeams()">Random Court Teams</button>
                                 <button class="btn-secondary" onclick="resetTeams()">Clear All</button>
                             </div>
                         </div>
@@ -335,17 +335,14 @@
             render();
         }
 
-        function randomizeTeams() {
-            const totalPlayersNeeded = gameState.numTeams * gameState.numPlayersPerTeam;
-            const allPlayers = gameState.teams.flatMap(t => t.players).filter(p => p.trim());
-            if (allPlayers.length < totalPlayersNeeded) {
-                alert(`Fill in all ${totalPlayersNeeded} player names first`);
-                return;
-            }
-            const shuffled = [...allPlayers].sort(() => Math.random() - 0.5);
-            gameState.teams.forEach((team, idx) => {
-                team.players = shuffled.slice(idx * gameState.numPlayersPerTeam, (idx + 1) * gameState.numPlayersPerTeam);
-            });
+        function randomizeCourtTeams() {
+            const teamIndices = Array.from({length: gameState.numTeams}, (_, i) => i);
+            const shuffled = [...teamIndices].sort(() => Math.random() - 0.5);
+            gameState.courtTeams = shuffled.slice(0, 2);
+            gameState.observingTeam = shuffled[2] !== undefined ? shuffled[2] : 0;
+            gameState.rallies = 0;
+            gameState.currentShot = -1;
+            gameState.guessResult = null;
             render();
         }
 
