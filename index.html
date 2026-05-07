@@ -150,6 +150,7 @@
             currentShot: -1,
             guessResult: null,
             lastShot: -1,
+            allShots: ['Net', 'Cross Net', 'Lift', 'Cross Lift', 'Smash', 'Cross Smash', 'Slice', 'Cross Slice', 'Clear', 'Cross Clear', 'Drop', 'Cross Drop'],
             enabledShots: [true, true, true, true, true, true, true, true, true, true, true, true],
             teamShots: [-1, -1, -1]
         };
@@ -218,7 +219,7 @@
                                     <div class="players">
                                         ${court1.players.slice(gameState.playingPairIndex[0] * 2, gameState.playingPairIndex[0] * 2 + 2).map(p => `<p style="color: #10b981;">• ${p}</p>`).join('')}
                                     </div>
-                                    ${gameState.teamShots[gameState.courtTeams[0]] >= 0 ? `<div style="color: #ef4444; margin-top: 10px; font-size: 0.9em;"><strong>Can't play:</strong> ${SHOTS[gameState.teamShots[gameState.courtTeams[0]]]}</div>` : ''}
+                                    ${gameState.teamShots[gameState.courtTeams[0]] >= 0 ? `<div style="color: #ef4444; margin-top: 10px; font-size: 0.9em;"><strong>Can't play:</strong> ${gameState.allShots[gameState.teamShots[gameState.courtTeams[0]]]}</div>` : ''}
                                 </div>
                                 <div class="team-display court">
                                     <div class="team-label">On Court - ${court2.name}</div>
@@ -226,7 +227,7 @@
                                     <div class="players">
                                         ${court2.players.slice(gameState.playingPairIndex[1] * 2, gameState.playingPairIndex[1] * 2 + 2).map(p => `<p style="color: #10b981;">• ${p}</p>`).join('')}
                                     </div>
-                                    ${gameState.teamShots[gameState.courtTeams[1]] >= 0 ? `<div style="color: #ef4444; margin-top: 10px; font-size: 0.9em;"><strong>Can't play:</strong> ${SHOTS[gameState.teamShots[gameState.courtTeams[1]]]}</div>` : ''}
+                                    ${gameState.teamShots[gameState.courtTeams[1]] >= 0 ? `<div style="color: #ef4444; margin-top: 10px; font-size: 0.9em;"><strong>Can't play:</strong> ${gameState.allShots[gameState.teamShots[gameState.courtTeams[1]]]}</div>` : ''}
                                 </div>
                                 ${gameState.teams.map((team, idx) => {
                                     if (idx !== gameState.courtTeams[0] && idx !== gameState.courtTeams[1]) {
@@ -236,7 +237,7 @@
                                                 <div class="players">
                                                     ${team.players.map(p => `<p>• ${p}</p>`).join('')}
                                                 </div>
-                                                ${gameState.teamShots[idx] >= 0 ? `<div style="color: #3b82f6; margin-top: 10px; font-size: 0.9em;"><strong>Guess:</strong> ${SHOTS[gameState.teamShots[idx]]}</div>` : ''}
+                                                ${gameState.teamShots[idx] >= 0 ? `<div style="color: #3b82f6; margin-top: 10px; font-size: 0.9em;"><strong>Guess:</strong> ${gameState.allShots[gameState.teamShots[idx]]}</div>` : ''}
                                             </div>
                                         `;
                                     }
@@ -257,11 +258,16 @@
                             <div class="rules-grid">
                                 <h3>Available Shots</h3>
                                 <p style="color: #cbd5e1; margin-bottom: 20px;">Toggle shots on/off to customize gameplay</p>
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px;">
+                                    <input type="text" id="newShotInput" placeholder="Add new shot" style="background: #0f172a; border: 1px solid #334155; border-radius: 6px; color: white; padding: 10px;">
+                                    <button class="btn-primary" onclick="addShot()" style="background: #8b5cf6; margin-top: 0;">Add Shot</button>
+                                </div>
                                 <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px;">
-                                    ${SHOTS.map((shot, idx) => `
+                                    ${gameState.allShots.map((shot, idx) => `
                                         <div style="background: #1e293b; padding: 15px; border-radius: 8px; display: flex; align-items: center; gap: 10px;">
                                             <input type="checkbox" id="shot-${idx}" ${gameState.enabledShots[idx] ? 'checked' : ''} onchange="toggleShot(${idx})" style="width: 20px; height: 20px; cursor: pointer;">
                                             <label for="shot-${idx}" style="color: white; cursor: pointer; flex: 1;">${shot}</label>
+                                            ${idx >= 12 ? `<button class="score-btn" onclick="removeShot(${idx})" style="background: #ef4444; padding: 6px; width: auto; margin-top: 0; font-size: 0.9em;">×</button>` : ''}
                                         </div>
                                     `).join('')}
                                 </div>
@@ -484,6 +490,23 @@
 
         function setAdvancedMode() {
             gameState.enabledShots = [true, true, true, true, true, true, true, true, true, true, true, true];
+            render();
+        }
+
+        function addShot() {
+            const input = document.getElementById('newShotInput');
+            const newShot = input.value.trim();
+            if (newShot) {
+                gameState.allShots.push(newShot);
+                gameState.enabledShots.push(true);
+                input.value = '';
+                render();
+            }
+        }
+
+        function removeShot(idx) {
+            gameState.allShots.splice(idx, 1);
+            gameState.enabledShots.splice(idx, 1);
             render();
         }
 
