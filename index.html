@@ -123,11 +123,11 @@
         ];
 
         let gameState = {
-            gameStarted: false,
+            gameStarted: true,
             teams: [
-                { id: 1, name: 'Team 1', players: Array(4).fill(''), score: 0 },
-                { id: 2, name: 'Team 2', players: Array(4).fill(''), score: 0 },
-                { id: 3, name: 'Team 3', players: Array(4).fill(''), score: 0 }
+                { id: 1, name: 'Team 1', players: ['', '', '', ''], score: 0 },
+                { id: 2, name: 'Team 2', players: ['', '', '', ''], score: 0 },
+                { id: 3, name: 'Team 3', players: ['', '', '', ''], score: 0 }
             ],
             courtTeams: [0, 1],
             observingTeam: 2,
@@ -139,45 +139,32 @@
 
         function render() {
             const app = document.getElementById('app');
+            const court1 = gameState.teams[gameState.courtTeams[0]];
+            const court2 = gameState.teams[gameState.courtTeams[1]];
+            const observing = gameState.teams[gameState.observingTeam];
 
-            if (!gameState.gameStarted) {
-                app.innerHTML = `
+            app.innerHTML = `
                     <div class="container">
                         <div class="header">
                             <h1>Badminton Trainer</h1>
                             <p>Random Shot Generator Game</p>
                         </div>
-                        <div class="grid">
-                            ${gameState.teams.map((team, idx) => `
-                                <div class="card">
-                                    <span class="card-title">Team ${idx + 1}</span>
-                                    <h3>${team.name}</h3>
-                                    ${team.players.map((p, pIdx) => `
-                                        <input type="text" placeholder="Player ${pIdx + 1}" onchange="updatePlayer(${team.id}, ${pIdx}, this.value)">
-                                    `).join('')}
-                                </div>
-                            `).join('')}
-                        </div>
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 30px;">
-                            <button class="btn-warning" style="font-size: 1.2em; padding: 15px;" onclick="randomizeTeams()">
-                                Shuffle Teams
-                            </button>
-                            <button class="btn-primary" style="font-size: 1.2em; padding: 15px;" onclick="startGame()">
-                                Start Game
-                            </button>
-                        </div>
-                    </div>
-                `;
-            } else {
-                const court1 = gameState.teams[gameState.courtTeams[0]];
-                const court2 = gameState.teams[gameState.courtTeams[1]];
-                const observing = gameState.teams[gameState.observingTeam];
-
-                app.innerHTML = `
-                    <div class="container">
-                        <div class="header">
-                            <h1>Badminton Trainer</h1>
-                            <p>Random Shot Generator Game</p>
+                        <div class="card" style="margin-bottom: 30px;">
+                            <h3>Team Setup</h3>
+                            <div class="grid">
+                                ${gameState.teams.map((team, idx) => `
+                                    <div style="background: #0f172a; padding: 15px; border-radius: 8px;">
+                                        <input type="text" placeholder="Team Name" value="${team.name}" onchange="updateTeamName(${idx}, this.value)" style="margin-bottom: 10px;">
+                                        ${team.players.map((p, pIdx) => `
+                                            <input type="text" placeholder="Player ${pIdx + 1}" value="${p}" onchange="updatePlayer(${team.id}, ${pIdx}, this.value)" style="margin-bottom: 5px;">
+                                        `).join('')}
+                                    </div>
+                                `).join('')}
+                            </div>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px;">
+                                <button class="btn-warning" onclick="randomizeTeams()">Shuffle Teams</button>
+                                <button class="btn-secondary" onclick="resetTeams()">Clear All</button>
+                            </div>
                         </div>
                         <div class="tabs">
                             <button class="tab-button active" onclick="switchTab('game')">Game</button>
@@ -256,12 +243,28 @@
                         </div>
                     </div>
                 `;
-            }
         }
 
         function updatePlayer(teamId, playerIdx, value) {
             const team = gameState.teams.find(t => t.id === teamId);
             if (team) team.players[playerIdx] = value;
+            render();
+        }
+
+        function updateTeamName(teamIdx, value) {
+            gameState.teams[teamIdx].name = value;
+            render();
+        }
+
+        function resetTeams() {
+            gameState.teams.forEach(team => {
+                team.players = ['', '', '', ''];
+                team.score = 0;
+            });
+            gameState.rallies = 0;
+            gameState.currentShot = -1;
+            gameState.guessResult = null;
+            render();
         }
 
         function randomizeTeams() {
@@ -278,12 +281,7 @@
         }
 
         function startGame() {
-            if (gameState.teams.every(t => t.players.every(p => p.trim()))) {
-                gameState.gameStarted = true;
-                render();
-            } else {
-                alert('Fill in all player names');
-            }
+            render();
         }
 
         function spinRacket() {
