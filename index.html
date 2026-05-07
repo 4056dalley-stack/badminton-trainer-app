@@ -251,25 +251,26 @@
                                 </div>
                             </div>
                             <div class="card" style="margin-top: 20px;">
-                                <h3>Guessing</h3>
-                                <p style="color: #94a3b8; margin-bottom: 15px;">Playing team guesses opponent's shot: +5 pts & go on court. Wrong: -3 pts</p>
+                                <h3>Playing Teams Guessing</h3>
+                                <p style="color: #94a3b8; margin-bottom: 15px;">Guess opponent's shot: +5 pts & observer goes on court. Wrong: -3 pts</p>
                                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
                                     ${gameState.teamShots[gameState.courtTeams[0]] >= 0 ? `
-                                        <button class="btn-primary" onclick="guessCorrect(${gameState.courtTeams[0]})" style="background: #059669;">Team ${gameState.courtTeams[0] + 1} Correct</button>
-                                        <button class="btn-danger" onclick="guessIncorrect(${gameState.courtTeams[0]})">Team ${gameState.courtTeams[0] + 1} Wrong</button>
+                                        <button class="btn-primary" onclick="courtGuessCorrect(${gameState.courtTeams[0]})" style="background: #059669;">Team ${gameState.courtTeams[0] + 1} Correct</button>
+                                        <button class="btn-danger" onclick="courtGuessIncorrect(${gameState.courtTeams[0]})">Team ${gameState.courtTeams[0] + 1} Wrong</button>
                                     ` : ''}
                                     ${gameState.teamShots[gameState.courtTeams[1]] >= 0 ? `
-                                        <button class="btn-primary" onclick="guessCorrect(${gameState.courtTeams[1]})" style="background: #059669;">Team ${gameState.courtTeams[1] + 1} Correct</button>
-                                        <button class="btn-danger" onclick="guessIncorrect(${gameState.courtTeams[1]})">Team ${gameState.courtTeams[1] + 1} Wrong</button>
+                                        <button class="btn-primary" onclick="courtGuessCorrect(${gameState.courtTeams[1]})" style="background: #059669;">Team ${gameState.courtTeams[1] + 1} Correct</button>
+                                        <button class="btn-danger" onclick="courtGuessIncorrect(${gameState.courtTeams[1]})">Team ${gameState.courtTeams[1] + 1} Wrong</button>
                                     ` : ''}
                                 </div>
-                                ${gameState.gamePoints >= 8 ? `
-                                    <p style="color: #3b82f6; margin-top: 15px; font-weight: 600;">Off-court team can now guess!</p>
-                                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px;">
-                                        <button class="btn-primary" onclick="observerGuessCorrect()" style="background: #3b82f6;">Observer Correct</button>
-                                        <button class="btn-danger" onclick="observerGuessIncorrect()">Observer Wrong</button>
-                                    </div>
-                                ` : ''}
+                            </div>
+                            <div class="card" style="margin-top: 20px;">
+                                <h3>Off-Court Team Guessing</h3>
+                                <p style="color: #3b82f6; margin-bottom: 15px;">Guess anytime: +5 pts & go on court. Wrong: -3 pts</p>
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                                    <button class="btn-primary" onclick="observerGuessCorrect()" style="background: #3b82f6;">Observer Correct</button>
+                                    <button class="btn-danger" onclick="observerGuessIncorrect()">Observer Wrong</button>
+                                </div>
                             </div>
                         </div>
                         <div id="shots-tab" class="hidden">
@@ -376,7 +377,7 @@
             render();
         }
 
-        function guessCorrect(teamIdx) {
+        function courtGuessCorrect(teamIdx) {
             gameState.teams[teamIdx].score += 5;
             gameState.gamePoints = 0;
             const newCourt = [gameState.observingTeam, gameState.courtTeams[0]];
@@ -387,7 +388,7 @@
             render();
         }
 
-        function guessIncorrect(teamIdx) {
+        function courtGuessIncorrect(teamIdx) {
             gameState.teams[teamIdx].score = Math.max(0, gameState.teams[teamIdx].score - 3);
             render();
         }
@@ -405,7 +406,13 @@
 
         function observerGuessCorrect() {
             gameState.teams[gameState.observingTeam].score += 5;
-            nextRound();
+            gameState.gamePoints = 0;
+            const newCourt = [gameState.observingTeam, gameState.courtTeams[0]];
+            gameState.observingTeam = gameState.courtTeams[1];
+            gameState.courtTeams = newCourt;
+            gameState.playingPairIndex = [0, 0];
+            gameState.teamShots = [-1, -1, -1];
+            render();
         }
 
         function observerGuessIncorrect() {
