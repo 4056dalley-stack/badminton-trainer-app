@@ -211,16 +211,23 @@
                                     <div class="team-label">On Court</div>
                                     <div class="team-name">${court1.name}</div>
                                     <div class="players">
-                                        ${court1.players.map(p => `<p>• ${p}</p>`).join('')}
+                                        <strong style="color: #10b981; font-size: 0.9em;">Playing:</strong>
+                                        ${court1.players.slice(0, 2).map(p => `<p>• ${p}</p>`).join('')}
+                                        ${court1.players.length > 2 ? `<strong style="color: #94a3b8; font-size: 0.85em; margin-top: 8px; display: block;">Reserves:</strong>` : ''}
+                                        ${court1.players.slice(2).map(p => `<p style="color: #64748b;">• ${p}</p>`).join('')}
                                     </div>
                                 </div>
                                 <div class="team-display court">
                                     <div class="team-label">On Court</div>
                                     <div class="team-name">${court2.name}</div>
                                     <div class="players">
-                                        ${court2.players.map(p => `<p>• ${p}</p>`).join('')}
+                                        <strong style="color: #10b981; font-size: 0.9em;">Playing:</strong>
+                                        ${court2.players.slice(0, 2).map(p => `<p>• ${p}</p>`).join('')}
+                                        ${court2.players.length > 2 ? `<strong style="color: #94a3b8; font-size: 0.85em; margin-top: 8px; display: block;">Reserves:</strong>` : ''}
+                                        ${court2.players.slice(2).map(p => `<p style="color: #64748b;">• ${p}</p>`).join('')}
                                     </div>
                                 </div>
+                                ${gameState.numTeams > 2 ? `
                                 <div class="team-display observing">
                                     <div class="team-label">Observing</div>
                                     <div class="team-name">${observing.name}</div>
@@ -228,6 +235,7 @@
                                         ${observing.players.map(p => `<p>• ${p}</p>`).join('')}
                                     </div>
                                 </div>
+                                ` : ''}
                             </div>
                             <div class="rally-dots">
                                 ${[0, 1, 2].map(i => `<div class="dot ${i < gameState.rallies ? 'active' : ''}"></div>`).join('')}
