@@ -134,7 +134,8 @@
             rallies: 0,
             currentShot: -1,
             guessResult: null,
-            lastShot: -1
+            lastShot: -1,
+            enabledShots: [true, true, true, true, true, true, true, true, true, true]
         };
 
         function render() {
@@ -168,6 +169,7 @@
                         </div>
                         <div class="tabs">
                             <button class="tab-button active" onclick="switchTab('game')">Game</button>
+                            <button class="tab-button" onclick="switchTab('shots')">Shots</button>
                             <button class="tab-button" onclick="switchTab('rules')">Rules</button>
                         </div>
                         <div id="game-tab">
@@ -229,6 +231,24 @@
                                         `}
                                     </div>
                                 ` : ''}
+                            </div>
+                        </div>
+                        <div id="shots-tab" class="hidden">
+                            <div class="rules-grid">
+                                <h3>Available Shots</h3>
+                                <p style="color: #cbd5e1; margin-bottom: 20px;">Toggle shots on/off to customize gameplay</p>
+                                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px;">
+                                    ${SHOTS.map((shot, idx) => `
+                                        <div style="background: #1e293b; padding: 15px; border-radius: 8px; display: flex; align-items: center; gap: 10px;">
+                                            <input type="checkbox" id="shot-${idx}" ${gameState.enabledShots[idx] ? 'checked' : ''} onchange="toggleShot(${idx})" style="width: 20px; height: 20px; cursor: pointer;">
+                                            <label for="shot-${idx}" style="color: white; cursor: pointer; flex: 1;">${shot}</label>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                                <div style="margin-top: 20px;">
+                                    <button class="btn-secondary" onclick="enableAllShots()" style="margin-bottom: 10px;">Enable All</button>
+                                    <button class="btn-danger" onclick="disableAllShots()">Disable All</button>
+                                </div>
                             </div>
                         </div>
                         <div id="rules-tab" class="hidden">
@@ -295,9 +315,14 @@
         }
 
         function generateShot() {
-            let newShot = Math.floor(Math.random() * SHOTS.length);
-            while (newShot === gameState.lastShot && SHOTS.length > 1) {
-                newShot = Math.floor(Math.random() * SHOTS.length);
+            const enabledIndices = gameState.enabledShots.map((enabled, idx) => enabled ? idx : -1).filter(idx => idx !== -1);
+            if (enabledIndices.length === 0) {
+                alert('Enable at least one shot type');
+                return;
+            }
+            let newShot = enabledIndices[Math.floor(Math.random() * enabledIndices.length)];
+            while (newShot === gameState.lastShot && enabledIndices.length > 1) {
+                newShot = enabledIndices[Math.floor(Math.random() * enabledIndices.length)];
             }
             gameState.currentShot = newShot;
             gameState.lastShot = newShot;
@@ -321,10 +346,26 @@
 
         function switchTab(tab) {
             document.getElementById('game-tab').classList.toggle('hidden', tab !== 'game');
+            document.getElementById('shots-tab').classList.toggle('hidden', tab !== 'shots');
             document.getElementById('rules-tab').classList.toggle('hidden', tab !== 'rules');
             document.querySelectorAll('.tab-button').forEach((btn, idx) => {
-                btn.classList.toggle('active', (idx === 0 && tab === 'game') || (idx === 1 && tab === 'rules'));
+                btn.classList.toggle('active', (idx === 0 && tab === 'game') || (idx === 1 && tab === 'shots') || (idx === 2 && tab === 'rules'));
             });
+        }
+
+        function toggleShot(idx) {
+            gameState.enabledShots[idx] = !gameState.enabledShots[idx];
+            render();
+        }
+
+        function enableAllShots() {
+            gameState.enabledShots = gameState.enabledShots.map(() => true);
+            render();
+        }
+
+        function disableAllShots() {
+            gameState.enabledShots = gameState.enabledShots.map(() => false);
+            render();
         }
 
         render();
