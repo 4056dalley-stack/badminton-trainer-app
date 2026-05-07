@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Badminton Trainer</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: white;
+        }
+        .container { max-width: 900px; margin: 0 auto; }
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        .header h1 { font-size: 2.5em; margin-bottom: 10px; }
+        .header p { color: #cbd5e1; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
+        .card {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            padding: 20px;
+        }
+        .card-title { color: #94a3b8; font-size: 0.9em; margin-bottom: 15px; display: block; }
+        .card h3 { color: white; margin-bottom: 20px; font-size: 1.2em; }
+        input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            background: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 6px;
+            color: white;
+        }
+        input::placeholder { color: #64748b; }
+        button {
+            width: 100%;
+            padding: 12px;
+            margin-top: 10px;
+            border: none;
+            border-radius: 6px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .btn-primary { background: #10b981; color: white; }
+        .btn-primary:hover { background: #059669; }
+        .btn-secondary { background: #3b82f6; color: white; }
+        .btn-secondary:hover { background: #2563eb; }
+        .btn-danger { background: #ef4444; color: white; }
+        .btn-danger:hover { background: #dc2626; }
+        .btn-warning { background: #a855f7; color: white; }
+        .btn-warning:hover { background: #9333ea; }
+        .scoreboard { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 30px; }
+        .score-box { background: #0f172a; padding: 20px; border-radius: 8px; text-align: center; }
+        .score-label { color: #94a3b8; font-size: 0.85em; margin-bottom: 8px; }
+        .score-value { color: white; font-size: 2.5em; font-weight: bold; }
+        .team-display {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+        .team-display.court { border-color: #10b981; }
+        .team-display.observing { border-color: #3b82f6; }
+        .team-label { font-size: 0.85em; color: #94a3b8; margin-bottom: 8px; }
+        .team-name { color: white; font-weight: 600; margin-bottom: 10px; }
+        .players { font-size: 0.9em; color: #cbd5e1; }
+        .players p { margin: 4px 0; }
+        .shot-display {
+            background: #0f172a;
+            padding: 30px;
+            border-radius: 8px;
+            text-align: center;
+            margin: 20px 0;
+        }
+        .shot-label { color: #94a3b8; font-size: 0.9em; margin-bottom: 15px; }
+        .shot-name { color: white; font-size: 2.5em; font-weight: bold; margin: 20px 0; }
+        .rally-dots { display: flex; justify-content: center; gap: 8px; margin: 20px 0; }
+        .dot { width: 12px; height: 12px; border-radius: 50%; background: #334155; }
+        .dot.active { background: #10b981; }
+        .tabs { display: flex; gap: 10px; margin-bottom: 30px; border-bottom: 1px solid #334155; }
+        .tab-button {
+            padding: 12px 20px;
+            border: none;
+            background: none;
+            color: #94a3b8;
+            font-size: 1em;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+        }
+        .tab-button.active { color: white; border-bottom-color: #10b981; }
+        .hidden { display: none; }
+        .rules-grid { display: grid; gap: 15px; }
+        .rule { background: #1e293b; border: 1px solid #334155; padding: 15px; border-radius: 8px; }
+        .rule h4 { color: white; margin-bottom: 8px; }
+        .rule p { color: #cbd5e1; font-size: 0.9em; line-height: 1.5; }
+        .score-btn { border: none; border-radius: 4px; color: white; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+        .score-btn:hover { opacity: 0.8; }
+    </style>
+</head>
+<body>
+    <div id="app"></div>
+
+    <script>
+        const SHOTS = ['Smash', 'Drop', 'Slice', 'Net Lift', 'Cross Net Clear'];
+        const RULES = [
+            { title: '1. Teams Setup', text: '3 teams of 4 people. Teams are created at the start of the game.' },
+            { title: '2. Random Shot Generator', text: 'Each round, a random shot is generated from: Smash, Drop, Slice, Net Lift, Cross Net Clear.' },
+            { title: '3. Court Players', text: 'Only 1 pair (2 people) from each team plays on court at a time. The other 2 players observe.' },
+            { title: '4. Observing Team Goal', text: 'The observing team tries to guess what shot the playing teams CANNOT play. If they guess correctly, they get to play next.' },
+            { title: '5. Playing Teams Guess', text: 'If one of the playing teams guesses what their opponents cannot play, both teams continue playing. The observing team now plays instead.' },
+            { title: '6. New Card Each Round', text: 'Everyone gets a new shot/card each round. After every 3 rallies, teams rotate.' }
+        ];
+
+        let gameState = {
+            gameStarted: false,
+            teams: [
+                { id: 1, name: 'Team 1', players: Array(4).fill(''), score: 0 },
+                { id: 2, name: 'Team 2', players: Array(4).fill(''), score: 0 },
+                { id: 3, name: 'Team 3', players: Array(4).fill(''), score: 0 }
+            ],
+            courtTeams: [0, 1],
+            observingTeam: 2,
+            rallies: 0,
+            currentShot: -1,
+            guessResult: null,
+            lastShot: -1
+        };
+
+        function render() {
+            const app = document.getElementById('app');
+
+            if (!gameState.gameStarted) {
+                app.innerHTML = `
+                    <div class="container">
+                        <div class="header">
+                            <h1>Badminton Trainer</h1>
+                            <p>Random Shot Generator Game</p>
+                        </div>
+                        <div class="grid">
+                            ${gameState.teams.map((team, idx) => `
+                                <div class="card">
+                                    <span class="card-title">Team ${idx + 1}</span>
+                                    <h3>${team.name}</h3>
+                                    ${team.players.map((p, pIdx) => `
+                                        <input type="text" placeholder="Player ${pIdx + 1}" onchange="updatePlayer(${team.id}, ${pIdx}, this.value)">
+                                    `).join('')}
+                                </div>
+                            `).join('')}
+                        </div>
+                        <button class="btn-primary" style="margin-top: 30px; font-size: 1.2em; padding: 15px;" onclick="startGame()">
+                            Start Game
+                        </button>
+                    </div>
+                `;
+            } else {
+                const court1 = gameState.teams[gameState.courtTeams[0]];
+                const court2 = gameState.teams[gameState.courtTeams[1]];
+                const observing = gameState.teams[gameState.observingTeam];
+
+                app.innerHTML = `
+                    <div class="container">
+                        <div class="header">
+                            <h1>Badminton Trainer</h1>
+                            <p>Random Shot Generator Game</p>
+                        </div>
+                        <div class="tabs">
+                            <button class="tab-button active" onclick="switchTab('game')">Game</button>
+                            <button class="tab-button" onclick="switchTab('rules')">Rules</button>
+                        </div>
+                        <div id="game-tab">
+                            <div class="scoreboard">
+                                ${gameState.teams.map((t, idx) => `
+                                    <div class="score-box">
+                                        <div class="score-label">${t.name}</div>
+                                        <div class="score-value">${t.score}</div>
+                                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px;">
+                                            <button class="score-btn" onclick="adjustScore(${idx}, -1)" style="background: #ef4444; padding: 6px; font-size: 0.9em;">-1</button>
+                                            <button class="score-btn" onclick="adjustScore(${idx}, 1)" style="background: #10b981; padding: 6px; font-size: 0.9em;">+1</button>
+                                        </div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                            <div class="grid">
+                                <div class="team-display court">
+                                    <div class="team-label">On Court</div>
+                                    <div class="team-name">${court1.name}</div>
+                                    <div class="players">
+                                        ${court1.players.map(p => `<p>• ${p}</p>`).join('')}
+                                    </div>
+                                </div>
+                                <div class="team-display court">
+                                    <div class="team-label">On Court</div>
+                                    <div class="team-name">${court2.name}</div>
+                                    <div class="players">
+                                        ${court2.players.map(p => `<p>• ${p}</p>`).join('')}
+                                    </div>
+                                </div>
+                                <div class="team-display observing">
+                                    <div class="team-label">Observing</div>
+                                    <div class="team-name">${observing.name}</div>
+                                    <div class="players">
+                                        ${observing.players.map(p => `<p>• ${p}</p>`).join('')}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="rally-dots">
+                                ${[0, 1, 2].map(i => `<div class="dot ${i < gameState.rallies ? 'active' : ''}"></div>`).join('')}
+                            </div>
+                            <div class="card" style="margin-top: 30px;">
+                                <h3>Random Shot Generator</h3>
+                                <p style="color: #94a3b8; margin-bottom: 15px;">For observing team to guess</p>
+                                <button class="btn-secondary" onclick="generateShot()">Generate Shot</button>
+                                ${gameState.currentShot >= 0 ? `
+                                    <div class="shot-display">
+                                        <div class="shot-label">Can't play:</div>
+                                        <div class="shot-name">${SHOTS[gameState.currentShot]}</div>
+                                        ${!gameState.guessResult ? `
+                                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                                                <button class="btn-primary" onclick="recordGuess(true)">Correct</button>
+                                                <button class="btn-danger" onclick="recordGuess(false)">Incorrect</button>
+                                            </div>
+                                        ` : `
+                                            <div style="color: ${gameState.guessResult === 'correct' ? '#10b981' : '#ef4444'}; font-size: 1.5em; font-weight: bold; margin-top: 15px;">
+                                                ${gameState.guessResult === 'correct' ? 'Correct!' : 'Incorrect'}
+                                            </div>
+                                        `}
+                                    </div>
+                                ` : ''}
+                            </div>
+                        </div>
+                        <div id="rules-tab" class="hidden">
+                            <div class="rules-grid">
+                                ${RULES.map(rule => `
+                                    <div class="rule">
+                                        <h4>${rule.title}</h4>
+                                        <p>${rule.text}</p>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        function updatePlayer(teamId, playerIdx, value) {
+            const team = gameState.teams.find(t => t.id === teamId);
+            if (team) team.players[playerIdx] = value;
+        }
+
+        function startGame() {
+            if (gameState.teams.every(t => t.players.every(p => p.trim()))) {
+                gameState.gameStarted = true;
+                render();
+            } else {
+                alert('Fill in all player names');
+            }
+        }
+
+        function spinRacket() {
+            const newCourt = [gameState.observingTeam, gameState.courtTeams[0]];
+            gameState.observingTeam = gameState.courtTeams[1];
+            gameState.courtTeams = newCourt;
+            gameState.rallies = 0;
+            gameState.currentShot = -1;
+            gameState.guessResult = null;
+            render();
+        }
+
+        function generateShot() {
+            let newShot = Math.floor(Math.random() * SHOTS.length);
+            while (newShot === gameState.lastShot && SHOTS.length > 1) {
+                newShot = Math.floor(Math.random() * SHOTS.length);
+            }
+            gameState.currentShot = newShot;
+            gameState.lastShot = newShot;
+            gameState.guessResult = null;
+            render();
+        }
+
+        function recordGuess(correct) {
+            gameState.guessResult = correct ? 'correct' : 'incorrect';
+            gameState.rallies++;
+            render();
+            if (gameState.rallies >= 3) {
+                setTimeout(() => spinRacket(), 1500);
+            }
+        }
+
+        function adjustScore(teamIdx, amount) {
+            gameState.teams[teamIdx].score = Math.max(0, gameState.teams[teamIdx].score + amount);
+            render();
+        }
+
+        function switchTab(tab) {
+            document.getElementById('game-tab').classList.toggle('hidden', tab !== 'game');
+            document.getElementById('rules-tab').classList.toggle('hidden', tab !== 'rules');
+            document.querySelectorAll('.tab-button').forEach((btn, idx) => {
+                btn.classList.toggle('active', (idx === 0 && tab === 'game') || (idx === 1 && tab === 'rules'));
+            });
+        }
+
+        render();
+    </script>
+</body>
+</html>
