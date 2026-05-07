@@ -122,13 +122,24 @@
             { title: '7. New Card Each Round', text: 'Everyone gets a new shot/card each round. After every 3 rallies, teams rotate.' }
         ];
 
+        function createTeams(numTeams, numPlayers) {
+            const teams = [];
+            for (let i = 0; i < numTeams; i++) {
+                teams.push({
+                    id: i + 1,
+                    name: `Team ${i + 1}`,
+                    players: Array(numPlayers).fill(''),
+                    score: 0
+                });
+            }
+            return teams;
+        }
+
         let gameState = {
             gameStarted: true,
-            teams: [
-                { id: 1, name: 'Team 1', players: ['', '', '', ''], score: 0 },
-                { id: 2, name: 'Team 2', players: ['', '', '', ''], score: 0 },
-                { id: 3, name: 'Team 3', players: ['', '', '', ''], score: 0 }
-            ],
+            numTeams: 3,
+            numPlayersPerTeam: 4,
+            teams: createTeams(3, 4),
             courtTeams: [0, 1],
             observingTeam: 2,
             rallies: 0,
@@ -152,6 +163,16 @@
                         </div>
                         <div class="card" style="margin-bottom: 30px;">
                             <h3>Team Setup</h3>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;">
+                                <div>
+                                    <label style="color: #94a3b8; font-size: 0.9em; display: block; margin-bottom: 8px;">Number of Teams</label>
+                                    <input type="number" min="2" max="10" value="${gameState.numTeams}" onchange="updateTeamConfig(parseInt(this.value), gameState.numPlayersPerTeam)" style="width: 100%; padding: 10px; background: #0f172a; border: 1px solid #334155; border-radius: 6px; color: white;">
+                                </div>
+                                <div>
+                                    <label style="color: #94a3b8; font-size: 0.9em; display: block; margin-bottom: 8px;">Players per Team</label>
+                                    <input type="number" min="1" max="10" value="${gameState.numPlayersPerTeam}" onchange="updateTeamConfig(gameState.numTeams, parseInt(this.value))" style="width: 100%; padding: 10px; background: #0f172a; border: 1px solid #334155; border-radius: 6px; color: white;">
+                                </div>
+                            </div>
                             <div class="grid">
                                 ${gameState.teams.map((team, idx) => `
                                     <div style="background: #0f172a; padding: 15px; border-radius: 8px;">
@@ -278,9 +299,21 @@
             render();
         }
 
+        function updateTeamConfig(numTeams, numPlayers) {
+            gameState.numTeams = numTeams;
+            gameState.numPlayersPerTeam = numPlayers;
+            gameState.teams = createTeams(numTeams, numPlayers);
+            gameState.courtTeams = [0, 1];
+            gameState.observingTeam = Math.min(2, numTeams - 1);
+            gameState.rallies = 0;
+            gameState.currentShot = -1;
+            gameState.guessResult = null;
+            render();
+        }
+
         function resetTeams() {
             gameState.teams.forEach(team => {
-                team.players = ['', '', '', ''];
+                team.players = Array(gameState.numPlayersPerTeam).fill('');
                 team.score = 0;
             });
             gameState.rallies = 0;
@@ -290,14 +323,15 @@
         }
 
         function randomizeTeams() {
+            const totalPlayersNeeded = gameState.numTeams * gameState.numPlayersPerTeam;
             const allPlayers = gameState.teams.flatMap(t => t.players).filter(p => p.trim());
-            if (allPlayers.length < 12) {
-                alert('Fill in all 12 player names first');
+            if (allPlayers.length < totalPlayersNeeded) {
+                alert(`Fill in all ${totalPlayersNeeded} player names first`);
                 return;
             }
             const shuffled = [...allPlayers].sort(() => Math.random() - 0.5);
             gameState.teams.forEach((team, idx) => {
-                team.players = shuffled.slice(idx * 4, (idx + 1) * 4);
+                team.players = shuffled.slice(idx * gameState.numPlayersPerTeam, (idx + 1) * gameState.numPlayersPerTeam);
             });
             render();
         }
