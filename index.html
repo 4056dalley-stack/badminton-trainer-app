@@ -111,10 +111,10 @@
     <div id="app"></div>
 
     <script>
-        const SHOTS = ['Net', 'Cross Net', 'Lift', 'Cross Lift', 'Smash', 'Cross Smash', 'Slice', 'Cross Slice', 'Clear', 'Cross Clear'];
+        const SHOTS = ['Net', 'Cross Net', 'Lift', 'Cross Lift', 'Smash', 'Cross Smash', 'Slice', 'Cross Slice', 'Clear', 'Cross Clear', 'Drop', 'Cross Drop'];
         const RULES = [
             { title: '1. Teams Setup', text: '3 teams of 4 people. Teams are created at the start of the game.' },
-            { title: '2. Shot Types', text: 'Net, Cross Net, Lift, Cross Lift, Smash, Cross Smash, Slice, Cross Slice, Clear, Cross Clear.' },
+            { title: '2. Shot Types', text: 'Net, Cross Net, Lift, Cross Lift, Smash, Cross Smash, Slice, Cross Slice, Clear, Cross Clear, Drop, Cross Drop.' },
             { title: '3. Random Shot Generator', text: 'Each round, a random shot is generated from the 10 available shot types.' },
             { title: '4. Court Players', text: 'Only 1 pair (2 people) from each team plays on court at a time. The other 2 players observe.' },
             { title: '5. Observing Team Goal', text: 'The observing team tries to guess what shot the playing teams CANNOT play. If they guess correctly, they get to play next.' },
@@ -135,7 +135,7 @@
             currentShot: -1,
             guessResult: null,
             lastShot: -1,
-            enabledShots: [true, true, true, true, true, true, true, true, true, true]
+            enabledShots: [true, true, true, true, true, true, true, true, true, true, true, true]
         };
 
         function render() {
