@@ -237,6 +237,10 @@
                             <div class="rules-grid">
                                 <h3>Available Shots</h3>
                                 <p style="color: #cbd5e1; margin-bottom: 20px;">Toggle shots on/off to customize gameplay</p>
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px;">
+                                    <button class="btn-primary" onclick="setSimpleMode()" style="background: #3b82f6;">Simple Mode</button>
+                                    <button class="btn-primary" onclick="setAdvancedMode()" style="background: #10b981;">Advanced Mode</button>
+                                </div>
                                 <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px;">
                                     ${SHOTS.map((shot, idx) => `
                                         <div style="background: #1e293b; padding: 15px; border-radius: 8px; display: flex; align-items: center; gap: 10px;">
@@ -365,6 +369,16 @@
 
         function disableAllShots() {
             gameState.enabledShots = gameState.enabledShots.map(() => false);
+            render();
+        }
+
+        function setSimpleMode() {
+            gameState.enabledShots = [true, false, true, false, true, false, true, false, true, false, true, false];
+            render();
+        }
+
+        function setAdvancedMode() {
+            gameState.enabledShots = [true, true, true, true, true, true, true, true, true, true, true, true];
             render();
         }
 
