@@ -111,14 +111,15 @@
     <div id="app"></div>
 
     <script>
-        const SHOTS = ['Smash', 'Drop', 'Slice', 'Net Lift', 'Cross Net Clear'];
+        const SHOTS = ['Net', 'Cross Net', 'Lift', 'Cross Lift', 'Smash', 'Cross Smash', 'Slice', 'Cross Slice', 'Clear', 'Cross Clear'];
         const RULES = [
             { title: '1. Teams Setup', text: '3 teams of 4 people. Teams are created at the start of the game.' },
-            { title: '2. Random Shot Generator', text: 'Each round, a random shot is generated from: Smash, Drop, Slice, Net Lift, Cross Net Clear.' },
-            { title: '3. Court Players', text: 'Only 1 pair (2 people) from each team plays on court at a time. The other 2 players observe.' },
-            { title: '4. Observing Team Goal', text: 'The observing team tries to guess what shot the playing teams CANNOT play. If they guess correctly, they get to play next.' },
-            { title: '5. Playing Teams Guess', text: 'If one of the playing teams guesses what their opponents cannot play, both teams continue playing. The observing team now plays instead.' },
-            { title: '6. New Card Each Round', text: 'Everyone gets a new shot/card each round. After every 3 rallies, teams rotate.' }
+            { title: '2. Shot Types', text: 'Net, Cross Net, Lift, Cross Lift, Smash, Cross Smash, Slice, Cross Slice, Clear, Cross Clear.' },
+            { title: '3. Random Shot Generator', text: 'Each round, a random shot is generated from the 10 available shot types.' },
+            { title: '4. Court Players', text: 'Only 1 pair (2 people) from each team plays on court at a time. The other 2 players observe.' },
+            { title: '5. Observing Team Goal', text: 'The observing team tries to guess what shot the playing teams CANNOT play. If they guess correctly, they get to play next.' },
+            { title: '6. Playing Teams Guess', text: 'If one of the playing teams guesses what their opponents cannot play, both teams continue playing. The observing team now plays instead.' },
+            { title: '7. New Card Each Round', text: 'Everyone gets a new shot/card each round. After every 3 rallies, teams rotate.' }
         ];
 
         let gameState = {
