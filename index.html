@@ -201,6 +201,10 @@
                                     <div class="score-box">
                                         <div class="score-label">${t.name}</div>
                                         <div class="score-value">${t.score}</div>
+                                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px;">
+                                            <button class="score-btn" onclick="adjustScore(${idx}, -1)" style="background: #ef4444; padding: 6px; font-size: 0.9em;">-1</button>
+                                            <button class="score-btn" onclick="adjustScore(${idx}, 1)" style="background: #10b981; padding: 6px; font-size: 0.9em;">+1</button>
+                                        </div>
                                     </div>
                                 `).join('')}
                             </div>
@@ -462,6 +466,15 @@
         function adjustScore(teamIdx, amount) {
             gameState.teams[teamIdx].score = Math.max(0, gameState.teams[teamIdx].score + amount);
             render();
+        }
+
+        function recordGuess(correct) {
+            gameState.guessResult = correct ? 'correct' : 'incorrect';
+            gameState.rallies++;
+            render();
+            if (gameState.rallies >= 3) {
+                setTimeout(() => spinRacket(), 1500);
+            }
         }
 
         function switchTab(tab) {
