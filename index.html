@@ -248,10 +248,6 @@
                                 <h3>Generate Shot Cards</h3>
                                 <p style="color: #94a3b8; margin-bottom: 15px;">Give each team their shot they can't play</p>
                                 <button class="btn-secondary" onclick="generateTeamShots()">Generate Shots</button>
-                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px;">
-                                    <button class="btn-primary" onclick="swapPairs()" ${gameState.gamePoints < 4 ? 'disabled style="opacity: 0.5;"' : ''}>Swap Pairs (at 4pts)</button>
-                                    <button class="btn-warning" onclick="nextRound()" ${gameState.gamePoints < 8 ? 'disabled style="opacity: 0.5;"' : ''}>Next Round (at 8pts)</button>
-                                </div>
                             </div>
                         </div>
                         <div id="shots-tab" class="hidden">
