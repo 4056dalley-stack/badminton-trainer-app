@@ -197,6 +197,7 @@
                         <div class="tabs">
                             <button class="tab-button active" onclick="switchTab('game')">Game</button>
                             <button class="tab-button" onclick="switchTab('shots')">Shots</button>
+                            <button class="tab-button" onclick="switchTab('aims')">Aims</button>
                             <button class="tab-button" onclick="switchTab('rules')">Rules</button>
                         </div>
                         <div id="game-tab">
@@ -270,6 +271,22 @@
                                     <button class="btn-danger" onclick="disableAllShots()">Disable All</button>
                                     <button class="btn-primary" onclick="setSimpleMode()" style="background: #3b82f6;">Simple Mode</button>
                                     <button class="btn-primary" onclick="setAdvancedMode()" style="background: #10b981;">Advanced Mode</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="aims-tab" class="hidden">
+                            <div class="rules-grid">
+                                <div class="rule">
+                                    <h4>Social Learning</h4>
+                                    <p>Players learn badminton skills through social interaction and peer observation. By playing together as teams, players model shots, strategies, and techniques for one another. The shared goal of identifying the opponent's constraint creates motivation to watch closely and engage with teammates' feedback.</p>
+                                </div>
+                                <div class="rule">
+                                    <h4>Observational Learning</h4>
+                                    <p>The off-court team learns by observing the playing teams' movements and shot selections. Without direct participation, they develop pattern recognition skills—learning to predict opponent constraints by analyzing what shots are played or avoided. This mirrors real coaching observation: learning happens through attentive watching.</p>
+                                </div>
+                                <div class="rule">
+                                    <h4>Communities of Practice</h4>
+                                    <p>Each game creates a community of badminton practitioners sharing a common goal: understand the game together. Knowledge flows through group rotation, shared feedback, and collective problem-solving. Players progress from novices (uncertain of patterns) to experienced members who can anticipate constraints—strengthening the community's collective competence.</p>
                                 </div>
                             </div>
                         </div>
@@ -456,9 +473,10 @@
         function switchTab(tab) {
             document.getElementById('game-tab').classList.toggle('hidden', tab !== 'game');
             document.getElementById('shots-tab').classList.toggle('hidden', tab !== 'shots');
+            document.getElementById('aims-tab').classList.toggle('hidden', tab !== 'aims');
             document.getElementById('rules-tab').classList.toggle('hidden', tab !== 'rules');
             document.querySelectorAll('.tab-button').forEach((btn, idx) => {
-                btn.classList.toggle('active', (idx === 0 && tab === 'game') || (idx === 1 && tab === 'shots') || (idx === 2 && tab === 'rules'));
+                btn.classList.toggle('active', (idx === 0 && tab === 'game') || (idx === 1 && tab === 'shots') || (idx === 2 && tab === 'aims') || (idx === 3 && tab === 'rules'));
             });
         }
 
