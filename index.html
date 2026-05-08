@@ -386,7 +386,7 @@
         }
 
         function courtGuessIncorrect(teamIdx) {
-            gameState.teams[teamIdx].score = Math.max(0, gameState.teams[teamIdx].score - 3);
+            gameState.teams[teamIdx].score -= 3;
             render();
         }
 
@@ -413,7 +413,7 @@
         }
 
         function observerGuessIncorrect() {
-            gameState.teams[gameState.observingTeam].score = Math.max(0, gameState.teams[gameState.observingTeam].score - 3);
+            gameState.teams[gameState.observingTeam].score -= 3;
             render();
         }
 
@@ -457,7 +457,7 @@
         }
 
         function adjustScore(teamIdx, amount) {
-            gameState.teams[teamIdx].score = Math.max(0, gameState.teams[teamIdx].score + amount);
+            gameState.teams[teamIdx].score += amount;
             render();
         }
 
